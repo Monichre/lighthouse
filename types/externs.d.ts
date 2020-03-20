@@ -308,6 +308,7 @@ declare global {
           url?: string;
           is_main_frame?: boolean;
           cumulative_score?: number;
+          nodeId?: number;
         };
         frame?: string;
         name?: string;
