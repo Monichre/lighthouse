@@ -468,6 +468,7 @@ declare global {
         selector: string;
         nodeLabel?: string;
         nodePath: string;
+        snippet?: string;
       }
 
       export interface ViewportDimensions {
