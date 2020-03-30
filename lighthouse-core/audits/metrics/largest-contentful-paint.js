@@ -86,7 +86,6 @@ class LargestContentfulPaint extends Audit {
     ];
 
     const details = Audit.makeTableDetails(headings, metricNodeData);
-    
 
     return {
       score: Audit.computeLogNormalScore(
