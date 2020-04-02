@@ -464,7 +464,7 @@ declare global {
       }
 
       export interface TraceNode {
-        type: string;
+        metricTag: string;
         selector: string;
         nodeLabel?: string;
         nodePath: string;
