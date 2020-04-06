@@ -665,22 +665,6 @@ class Config {
   }
 
   /**
-   * @param {LH.Config.Json} config
-   * @return {Array<{id: string, title: string}>}
-   */
-  static getCategories(config) {
-    const categories = config.categories;
-    if (!categories) {
-      return [];
-    }
-
-    return Object.keys(categories).map(id => {
-      const title = categories[id].title;
-      return {id, title};
-    });
-  }
-
-  /**
    * From some requested audits, return names of all required and optional artifacts
    * @param {Config['audits']} audits
    * @return {Set<string>}

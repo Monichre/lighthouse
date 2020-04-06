@@ -11,13 +11,21 @@ declare global {
   module LH {
     export type LighthouseError = LHError;
 
-    export type I18NMessageValuesEntry = {path: string, values:  Record<string, string | number>};
-    export type I18NMessageEntry = string | I18NMessageValuesEntry;
+    // TODO(bckenny): should IcuMessage be just the string, and have an Entry/Instance or something for this object?
+    export type IcuMessage = {
+      id: string;
+      values?: Record<string, string | number>;
+      // TODO(bckenny): in practice is this ever a preformatted one? Or always a UIStrings backup? swap-locales has a formatted backup in the lhr itself. We really need a UIStrings backup for e.g. gatherer messages that don't exist anymore
+      /** The original string given in 'UIStrings', optionally used as a backup if no locale message can be found. */
+      uiStringMessage?: string,
+    };
 
-    export interface I18NMessages {
-      [icuMessageId: string]: I18NMessageEntry[];
+    // TODO(bckenny): switch back to IcuMessagePaths to match lhr var name?
+    export interface IcuMessagesByPath {
+      [path: string]: IcuMessage;
     }
 
+    // TODO(bckenny): why is it important to have this specifically keyed?
     export type I18NRendererStrings = typeof Util['UIStrings'];
 
     export interface Environment {
@@ -61,7 +69,7 @@ declare global {
       /** Execution timings for the Lighthouse run */
       timing: Result.Timing;
       /** The record of all formatted string locations in the LHR and their corresponding source values. */
-      i18n: {rendererFormattedStrings: I18NRendererStrings, icuMessagePaths: I18NMessages};
+      i18n: {rendererFormattedStrings: I18NRendererStrings, icuMessagePaths: IcuMessagesByPath};
       /** An array containing the result of all stack packs. */
       stackPacks?: Result.StackPack[];
     }

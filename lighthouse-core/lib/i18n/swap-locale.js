@@ -10,11 +10,11 @@ const _set = require('lodash.set');
 const i18n = require('./i18n.js');
 
 /**
- * @fileoverview Use the lhr.i18n.icuMessagePaths object to change locales
+ * @fileoverview Use the lhr.i18n.icuMessagePaths object to change locales.
  *
- * `icuMessagePaths` is an object keyed by `icuMessageId`s. Within each is either
- * 1) an array of strings, which are just object paths to where that message is used in the LHR
- * 2) an array of `LH.I18NMessageValuesEntry`s which include both a `path` and a `values` object
+ * `icuMessagePaths` is an object keyed by `string` paths that locate the i18ned
+ * string within the LHR. Within each entry is an
+ * array of `LH.I18nMessage`s which include both a `` and a `values` object
  *    which will be used in the replacement within `i18n._formatIcuMessage()`
  *
  * An example:
@@ -38,6 +38,9 @@ const i18n = require('./i18n.js');
     ...
  */
 
+// TODO(bckenny): do we need to provide a backwards compatible swap locale?
+// TODO(bckenny): should gather runner just run replaceIcuMessageInstanceIds on artifacts and then swap-locale when loading them?
+
 /**
  * Returns a new LHR with all strings changed to the new `requestedLocale`.
  * @param {LH.Result} lhr
@@ -53,33 +56,27 @@ function swapLocale(lhr, requestedLocale) {
   /** @type {string[]} */
   const missingIcuMessageIds = [];
 
-  Object.entries(icuMessagePaths).forEach(([icuMessageId, messageInstancesInLHR]) => {
-    for (const instance of messageInstancesInLHR) {
-      // The path that _formatPathAsString() generated
-      let path;
-      let values;
-      if (typeof instance === 'string') {
-        path = instance;
-      } else {
-        path = instance.path;
-        // `values` are the string template values to be used. eg. `values: {wastedBytes: 9028}`
-        values = instance.values;
+  for (const [path, icuMessage] of Object.entries(icuMessagePaths)) {
+    try {
+      // We expect the entries to always be `icuMessage`s, so be stricter than `i18n.getFormatted`.
+      if (!i18n.isIcuMessage(icuMessage)) {
+        throw new Error('This is not an ICU message');
       }
+
+      // Get new formatted strings in revised locale
+      const formattedStr = i18n.getFormatted(icuMessage, locale);
+      // Write string back into the LHR
+      _set(lhr, path, formattedStr);
+    } catch (err) {
       // If we couldn't find the new replacement message, keep things as is.
-      try {
-        // Get new formatted strings in revised locale
-        const formattedStr = i18n.getFormattedFromIdAndValues(locale, icuMessageId, values);
-        // Write string back into the LHR
-        _set(lhr, path, formattedStr);
-      } catch (err) {
-        if (err.message === i18n._ICUMsgNotFoundMsg) {
-          missingIcuMessageIds.push(icuMessageId);
-        } else {
-          throw err;
-        }
+      // TODO(bckenny): need to catch mis-matched arguments from updated strings here too?
+      if (err.message === i18n._ICUMsgNotFoundMsg) {
+        missingIcuMessageIds.push(icuMessage.id);
+      } else {
+        throw err;
       }
     }
-  });
+  }
 
   lhr.i18n.rendererFormattedStrings = i18n.getRendererFormattedStrings(locale);
   // Tweak the config locale
