@@ -5,28 +5,10 @@
  */
 
 import LHError = require('../lighthouse-core/lib/lh-error.js');
-import Util = require('../lighthouse-core/report/html/renderer/util.js');
 
 declare global {
   module LH {
     export type LighthouseError = LHError;
-
-    // TODO(bckenny): should IcuMessage be just the string, and have an Entry/Instance or something for this object?
-    export type IcuMessage = {
-      id: string;
-      values?: Record<string, string | number>;
-      // TODO(bckenny): in practice is this ever a preformatted one? Or always a UIStrings backup? swap-locales has a formatted backup in the lhr itself. We really need a UIStrings backup for e.g. gatherer messages that don't exist anymore
-      /** The original string given in 'UIStrings', optionally used as a backup if no locale message can be found. */
-      uiStringMessage?: string,
-    };
-
-    // TODO(bckenny): switch back to IcuMessagePaths to match lhr var name?
-    export interface IcuMessagesByPath {
-      [path: string]: IcuMessage;
-    }
-
-    // TODO(bckenny): why is it important to have this specifically keyed?
-    export type I18NRendererStrings = typeof Util['UIStrings'];
 
     export interface Environment {
       /** The user agent string of the version of Chrome used. */

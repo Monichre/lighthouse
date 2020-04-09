@@ -122,8 +122,8 @@ class Runner {
       log.timeEnd(resultsStatus);
       log.timeEnd(runnerStatus);
 
-      /** @type {LH.Result} */
-      const lhr = {
+      /** @type {LH.I18n<LH.Result>} */
+      const i18nLhr = {
         userAgent: artifacts.HostUserAgent,
         environment: {
           networkUserAgent: artifacts.NetworkUserAgent,
@@ -149,7 +149,10 @@ class Runner {
       };
 
       // Replace ICU message references with localized strings; save replaced paths in lhr.
-      lhr.i18n.icuMessagePaths = i18n.replaceIcuMessageInstanceIds(lhr, settings.locale);
+      i18nLhr.i18n.icuMessagePaths = i18n.replaceIcuMessageInstanceIds(i18nLhr, settings.locale);
+
+      // LHR has now been localized.
+      const lhr = /** @type {LH.Result} */ (i18nLhr);
 
       // Create the HTML, JSON, and/or CSV string
       const report = generateReport(lhr, settings.output);
@@ -365,7 +368,7 @@ class Runner {
    * Searches a pass's artifacts for any `lhrRuntimeError` error artifacts.
    * Returns the first one found or `null` if none found.
    * @param {LH.Artifacts} artifacts
-   * @return {LH.Result['runtimeError']|undefined}
+   * @return {LH.I18n<LH.Result['runtimeError']>|undefined}
    */
   static getArtifactRuntimeError(artifacts) {
     const possibleErrorArtifacts = [

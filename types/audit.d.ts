@@ -42,7 +42,7 @@ declare global {
 
     export type ScoreDisplayMode = Audit.ScoreDisplayModes[keyof Audit.ScoreDisplayModes];
 
-    export interface Meta {
+    export type Meta = I18n<{
       /** The string identifier of the audit, in kebab case. */
       id: string;
       /** Short, user-visible title for the audit when successful. */
@@ -57,7 +57,7 @@ declare global {
       __internalOptionalArtifacts?: Array<keyof Artifacts>;
       /** A string identifying how the score should be interpreted for display. */
       scoreDisplayMode?: Audit.ScoreDisplayMode;
-    }
+    }>
 
     export interface ByteEfficiencyItem extends Audit.Details.OpportunityItem {
       url: string;
