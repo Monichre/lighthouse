@@ -83,7 +83,7 @@ declare global {
 
       /** Possible types of values found within table items. */
       type ItemValueTypes = 'bytes' | 'code' | 'link' | 'ms' | 'multi' | 'node' | 'source-location' | 'numeric' | 'text' | 'thumbnail' | 'timespanMs' | 'url';
-      type Value = string | number | boolean | DebugData | NodeValue | SourceLocationValue | LinkValue | UrlValue | CodeValue;
+      type Value = string | number | boolean | DebugData | NodeValue | SourceLocationValue | LinkValue | UrlValue | CodeValue | IcuMessage;
 
       // TODO(bckenny): unify Table/Opportunity headings and items on next breaking change.
 
@@ -94,7 +94,7 @@ declare global {
          */
         key: string|null;
         /** Readable text label of the field. */
-        text: string;
+        text: string | IcuMessage;
         /**
          * The data format of the column of values being described. Usually
          * those values will be primitives rendered as this type, but the values

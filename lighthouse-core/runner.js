@@ -38,7 +38,7 @@ class Runner {
 
       /**
        * List of top-level warnings for this Lighthouse run.
-       * @type {Array<string>}
+       * @type {Array<string | LH.IcuMessage>}
        */
       const lighthouseRunWarnings = [];
 

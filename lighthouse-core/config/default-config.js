@@ -115,7 +115,7 @@ const UIStrings = {
 
 const str_ = i18n.createMessageInstanceIdFn(__filename, UIStrings);
 
-/** @type {LH.I18n<LH.Config.Json>} */
+/** @type {LH.Config.Json} */
 const defaultConfig = {
   settings: constants.defaultSettings,
   passes: [{
