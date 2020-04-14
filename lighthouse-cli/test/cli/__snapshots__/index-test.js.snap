@@ -151,6 +151,9 @@ Object {
       "path": "third-party-summary",
     },
     Object {
+      "path": "lcp-node",
+    },
+    Object {
       "path": "manual/pwa-cross-browser",
     },
     Object {
@@ -934,6 +937,11 @@ Object {
           "weight": 0,
         },
         Object {
+          "group": "diagnostics",
+          "id": "lcp-node",
+          "weight": 0,
+        },
+        Object {
           "id": "network-requests",
           "weight": 0,
         },
@@ -1281,6 +1289,9 @@ Object {
         },
         Object {
           "path": "accessibility",
+        },
+        Object {
+          "path": "trace-nodes",
         },
       ],
       "loadFailureMode": "fatal",
