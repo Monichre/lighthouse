@@ -93,7 +93,7 @@ class Runner {
       if (!runOpts.config.audits) {
         throw new Error('No audits to evaluate.');
       }
-      const auditResults = await Runner._runAudits(settings, runOpts.config.audits, artifacts,
+      const auditResultsById = await Runner._runAudits(settings, runOpts.config.audits, artifacts,
           lighthouseRunWarnings);
 
       // LHR construction phase
@@ -107,16 +107,10 @@ class Runner {
       // Entering: conclusion of the lighthouse result object
       const lighthouseVersion = require('../package.json').version;
 
-      /** @type {Object<string, LH.Audit.Result>} */
-      const resultsById = {};
-      for (const audit of auditResults) {
-        resultsById[audit.id] = audit;
-      }
-
-      /** @type {Object<string, LH.Result.Category>} */
+      /** @type {Record<string, LH.I18n<LH.Result.Category>>} */
       let categories = {};
       if (runOpts.config.categories) {
-        categories = ReportScoring.scoreAllCategories(runOpts.config.categories, resultsById);
+        categories = ReportScoring.scoreAllCategories(runOpts.config.categories, auditResultsById);
       }
 
       log.timeEnd(resultsStatus);
@@ -136,7 +130,7 @@ class Runner {
         finalUrl: artifacts.URL.finalUrl,
         runWarnings: lighthouseRunWarnings,
         runtimeError: Runner.getArtifactRuntimeError(artifacts),
-        audits: resultsById,
+        audits: auditResultsById,
         configSettings: settings,
         categories,
         categoryGroups: runOpts.config.groups || undefined,
@@ -224,8 +218,8 @@ class Runner {
    * @param {LH.Config.Settings} settings
    * @param {Array<LH.Config.AuditDefn>} audits
    * @param {LH.Artifacts} artifacts
-   * @param {Array<string>} runWarnings
-   * @return {Promise<Array<LH.Audit.Result>>}
+   * @param {Array<string | LH.IcuMessage>} runWarnings
+   * @return {Promise<Record<string, LH.I18n<LH.Audit.Result>>>}
    */
   static async _runAudits(settings, audits, artifacts, runWarnings) {
     const status = {msg: 'Analyzing and running audits...', id: 'lh:runner:auditing'};
@@ -255,15 +249,17 @@ class Runner {
     };
 
     // Run each audit sequentially
-    const auditResults = [];
+    /** @type {Record<string, LH.I18n<LH.Audit.Result>>} */
+    const auditResultsById = {};
     for (const auditDefn of audits) {
+      const auditId = auditDefn.implementation.meta.id;
       const auditResult = await Runner._runAudit(auditDefn, artifacts, sharedAuditContext,
           runWarnings);
-      auditResults.push(auditResult);
+      auditResultsById[auditId] = auditResult;
     }
 
     log.timeEnd(status);
-    return auditResults;
+    return auditResultsById;
   }
 
   /**
@@ -272,8 +268,8 @@ class Runner {
    * @param {LH.Config.AuditDefn} auditDefn
    * @param {LH.Artifacts} artifacts
    * @param {Pick<LH.Audit.Context, 'settings'|'computedCache'>} sharedAuditContext
-   * @param {Array<string>} runWarnings
-   * @return {Promise<LH.Audit.Result>}
+   * @param {Array<string | LH.IcuMessage>} runWarnings
+   * @return {Promise<LH.I18n<LH.Audit.Result>>}
    * @private
    */
   static async _runAudit(auditDefn, artifacts, sharedAuditContext, runWarnings) {

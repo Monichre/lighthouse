@@ -123,7 +123,7 @@ declare global {
          */
         key: string|null;
         /** Readable text label of the field. */
-        label: string;
+        label: string | IcuMessage;
         /**
          * The data format of the column of values being described. Usually
          * those values will be primitives rendered as this type, but the values

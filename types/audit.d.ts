@@ -66,6 +66,7 @@ declare global {
       wastedPercent?: number;
     }
 
+    // TODO(bckenny): maybe remove some of the `| string` parts?
     /** The shared properties of an Audit.Product whether it has a numericValue or not. We want to enforce `numericUnit` accompanying `numericValue` whenever it is set, so the final Audit.Product type is a discriminated union on `'numericValue' in audit`*/
     interface ProductBase {
       /** The scored value of the audit, provided in the range `0-1`, or null if `scoreDisplayMode` indicates not scored. */
@@ -84,7 +85,7 @@ declare global {
       /** Extra information about the page provided by some types of audits, in one of several possible forms that can be rendered in the HTML report. */
       details?: Audit.Details;
       /** If an audit encounters unusual execution circumstances, strings can be put in this optional array to add top-level warnings to the LHR. */
-      runWarnings?: Array<string>;
+      runWarnings?: Array<IcuMessage>;
     }
 
     /** The Audit.Product type for audits that do not return a `numericValue`. */
@@ -134,7 +135,7 @@ declare global {
       /** The unit of `numericValue`, used when the consumer wishes to convert numericValue to a display string. */
       numericUnit?: string;
       /** Extra information about the page provided by some types of audits, in one of several possible forms that can be rendered in the HTML report. */
-      details?: Audit.Details;
+      details?: FormattedI18n<Audit.Details>;
     }
 
     export interface Results {

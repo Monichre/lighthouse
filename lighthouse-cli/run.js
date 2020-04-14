@@ -21,6 +21,8 @@ const assetSaver = require('../lighthouse-core/lib/asset-saver.js');
 const open = require('open');
 
 /** @typedef {import('../lighthouse-core/lib/lh-error.js')} LighthouseError */
+/** @typedef {LH.FormattedI18n<LighthouseError>} FormattedLighthouseError */
+
 
 const _RUNTIME_ERROR_CODE = 1;
 const _PROTOCOL_TIMEOUT_EXIT_CODE = 67;
@@ -76,7 +78,7 @@ function printProtocolTimeoutErrorAndExit() {
 }
 
 /**
- * @param {LighthouseError} err
+ * @param {FormattedLighthouseError} err
  * @return {never}
  */
 function printRuntimeErrorAndExit(err) {
@@ -88,7 +90,7 @@ function printRuntimeErrorAndExit(err) {
 }
 
 /**
- * @param {LighthouseError} err
+ * @param {FormattedLighthouseError} err
  * @return {never}
  */
 function printErrorAndExit(err) {

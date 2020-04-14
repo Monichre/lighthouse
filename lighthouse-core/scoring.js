@@ -46,7 +46,7 @@ class ReportScoring {
   /**
    * Returns the report JSON object with computed scores.
    * @param {Object<string, LH.Config.Category>} configCategories
-   * @param {Object<string, LH.Audit.Result>} resultsByAuditId
+   * @param {Object<string, LH.I18n<LH.Audit.Result>>} resultsByAuditId
    * @return {Object<string, LH.I18n<LH.Result.Category>>}
    */
   static scoreAllCategories(configCategories, resultsByAuditId) {

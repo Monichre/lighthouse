@@ -8,22 +8,19 @@ import Util = require('../lighthouse-core/report/html/renderer/util.js');
 
 declare global {
   module LH {
-    type I18n<T> =
-        // TODO(bckenny): probably don't recurse into already existing IcuMessages
-        string extends T ? (T | IcuMessage) :
-        T extends Function ? T :
-        T extends Array<infer R> ? I18nArray<R> :
-        T extends Map<infer K, infer V> ? I18nMap<K, V> :
-        T extends Set<infer M> ? I18nSet<M> :
-        T extends object ? I18nObject<T> :
-        T;
+    // TODO(bckenny): maybe LH.Icu<> instead?
+    // TODO(bckenny): don't recurse into already existing IcuMessages?
+    type I18n<T> = string extends T ?
+      // All strings can also be an LH.IcuMessage
+      (T | IcuMessage) :
+      // Otherwise recurse into any properties and make the same change.
+      {[K in keyof T]: I18n<T[K]>};
 
-    type I18nArray<T> = Array<I18n<T>>;
-    type I18nMap<K, V> = Map<I18n<K>, I18n<V>>;
-    type I18nSet<T> = Set<I18n<T>>;
-    type I18nObject<T> = {
-        [K in keyof T]: I18n<T[K]>;
-    };
+    type FormattedI18n<T> = IcuMessage extends T ?
+      // All LH.IcuMessages replaced with strings.
+      Exclude<T, IcuMessage> | string :
+      // Otherwise recurse into any properties and make the same change.
+      {[K in keyof T]: FormattedI18n<T[K]>};
 
     // TODO(bckenny): should IcuMessage be just the string, and have an IcuMessageEntry/Instance or something for this object?
     export type IcuMessage = {
