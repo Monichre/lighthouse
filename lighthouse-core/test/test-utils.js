@@ -7,6 +7,7 @@
 
 /* eslint-env jest */
 
+const fs = require('fs');
 const i18n = require('../lib/i18n/i18n.js');
 const {default: {toBeCloseTo}} = require('expect/build/matchers.js');
 
@@ -41,3 +42,38 @@ expect.extend({
     return toBeCloseTo.call(thisObj, ...args);
   },
 });
+
+function getProtoRoundTrip() {
+  let sampleResultsRoundtripStr;
+  let describeIfProtoExists;
+  let itIfProtoExists;
+  try {
+    sampleResultsRoundtripStr =
+      fs.readFileSync(__dirname + '/../../../results/sample_v2_round_trip.json', 'utf-8');
+    describeIfProtoExists = describe;
+    itIfProtoExists = it;
+  } catch (err) {
+    if (process.env.GITHUB_ACTIONS) {
+      throw new Error('sample_v2_round_trip must be generated for CI proto test');
+    }
+    // Otherwise no proto roundtrip for tests, so skip them.
+    // This is fine for running the tests locally.
+
+    itIfProtoExists = (...args) => {
+      // eslint-disable-next-line no-console
+      console.warn('Skipping test - you need to run yarn test-proto first.');
+      it.skip(...args);
+    };
+    describeIfProtoExists = describe.skip;
+  }
+
+  return {
+    itIfProtoExists,
+    describeIfProtoExists,
+    sampleResultsRoundtripStr,
+  };
+}
+
+module.exports = {
+  getProtoRoundTrip,
+};

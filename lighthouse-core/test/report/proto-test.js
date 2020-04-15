@@ -5,22 +5,16 @@
  */
 'use strict';
 
+const testUtils = require('../test-utils.js');
 const sampleJson = require('../results/sample_v2.json');
 const preprocessor = require('../../lib/proto-preprocessor.js');
 
 /* eslint-env jest */
 
-let roundTripJson;
-try {
-  const roundTripPath = '../../../proto/sample_v2_round_trip.json';
-  require(roundTripPath);
-} catch (err) {
-  // eslint-disable-next-line no-console
-  console.warn('Skipping test - you need to run yarn test-proto first.');
-}
-const describeIf = roundTripJson ? describe : describe.skip;
+const {describeIfProtoExists, sampleResultsRoundtripStr} = testUtils.getProtoRoundTrip();
+const roundTripJson = sampleResultsRoundtripStr && JSON.parse(sampleResultsRoundtripStr);
 
-describeIf('round trip JSON comparison subsets', () => {
+describeIfProtoExists('round trip JSON comparison subsets', () => {
   let processedLHR;
 
   beforeEach(() => {
@@ -60,7 +54,7 @@ describeIf('round trip JSON comparison subsets', () => {
   });
 });
 
-describeIf('round trip JSON comparison to everything', () => {
+describeIfProtoExists('round trip JSON comparison to everything', () => {
   let processedLHR;
 
   beforeEach(() => {
