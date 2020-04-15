@@ -24,7 +24,7 @@ const sampleResultsStr = fs.readFileSync(__dirname + '/../../../results/sample_v
 let sampleResultsRoundtripStr;
 try {
   sampleResultsRoundtripStr =
-    fs.readFileSync(__dirname + '/../../../results/sample_v2.json', 'utf-8');
+    fs.readFileSync(__dirname + '/../../../results/sample_v2_round_trip.json', 'utf-8');
 } catch (err) {
   // eslint-disable-next-line no-console
   console.warn('Skipping test - you need to run yarn test-proto first.');
