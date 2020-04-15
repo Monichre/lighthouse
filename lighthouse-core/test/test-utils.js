@@ -49,7 +49,7 @@ function getProtoRoundTrip() {
   let itIfProtoExists;
   try {
     sampleResultsRoundtripStr =
-      fs.readFileSync(__dirname + '/../../../results/sample_v2_round_trip.json', 'utf-8');
+      fs.readFileSync(__dirname + '/results/sample_v2_round_trip.json', 'utf-8');
     describeIfProtoExists = describe;
     itIfProtoExists = it;
   } catch (err) {
