@@ -71,7 +71,7 @@ function swapLocale(lhr, requestedLocale) {
       // If we couldn't find the new replacement message, keep things as is.
       // TODO(bckenny): need to catch mis-matched arguments from updated strings here too?
       if (err.message === i18n._ICUMsgNotFoundMsg) {
-        missingIcuMessageIds.push(icuMessage.id);
+        missingIcuMessageIds.push(icuMessage.i18nId);
       } else {
         throw err;
       }

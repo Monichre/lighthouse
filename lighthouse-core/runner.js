@@ -153,8 +153,10 @@ class Runner {
 
       return {lhr, artifacts, report};
     } catch (err) {
-      // i18n error strings
-      err.friendlyMessage = i18n.getFormatted(err.friendlyMessage, settings.locale);
+      // i18n LighthouseError strings.
+      if (err.friendlyMessage) {
+        err.friendlyMessage = i18n.getFormatted(err.friendlyMessage, settings.locale);
+      }
       await Sentry.captureException(err, {level: 'fatal'});
       throw err;
     }

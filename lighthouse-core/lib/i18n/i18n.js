@@ -16,6 +16,7 @@ const {isObjectOfUnknownValues, isObjectOrArrayOfUnknownValues} = require('../ty
 /** @typedef {import('intl-messageformat-parser').ArgumentElement} ArgumentElement */
 
 const LH_ROOT = path.join(__dirname, '../../../');
+const MESSAGE_I18N_ID_REGEX = / | [^\s]+$/;
 
 const _ICUMsgNotFoundMsg = 'ICU message not found in destination locale';
 
@@ -271,8 +272,10 @@ function _preformatValues(messageFormatter, values, icuMessage) {
 function _formatIcuMessage(locale, icuMessage) {
   const localeMessages = LOCALES[locale];
   if (!localeMessages) throw new Error(`Unsupported locale '${locale}'`);
-  let localeMessage = localeMessages[icuMessage.id] && localeMessages[icuMessage.id].message;
+  let localeMessage = localeMessages[icuMessage.i18nId] &&
+      localeMessages[icuMessage.i18nId].message;
 
+  // TODO(bckenny): if moving to required uiStringMessage can remove a good bit of this.
   // fallback to the original english message if we couldn't find a message in the specified locale
   // better to have an english message than no message at all, in some number cases it won't even matter
   if (!localeMessage && icuMessage.uiStringMessage) {
@@ -280,8 +283,8 @@ function _formatIcuMessage(locale, icuMessage) {
     localeMessage = icuMessage.uiStringMessage;
 
     // Warn the user that the UIString message != the `en` message ∴ they should update the strings
-    if (!LOCALES.en[icuMessage.id] || localeMessage !== LOCALES.en[icuMessage.id].message) {
-      log.verbose('i18n', `Message "${icuMessage.id}" does not match its 'en' counterpart. ` +
+    if (!LOCALES.en[icuMessage.i18nId] || localeMessage !== LOCALES.en[icuMessage.i18nId].message) {
+      log.verbose('i18n', `Message "${icuMessage.i18nId}" does not match its 'en' counterpart. ` +
         `Run 'i18n' to update.`);
     }
   }
@@ -367,7 +370,7 @@ function createMessageInstanceIdFn(filename, fileStrings) {
     const icuMessageId = `${unixStyleFilename} | ${keyname}`;
 
     return {
-      id: icuMessageId,
+      i18nId: icuMessageId,
       values,
       uiStringMessage: icuMessage,
     };
@@ -386,8 +389,8 @@ function isIcuMessage(icuMessageOrNot) {
     return false;
   }
 
-  const {id, values, uiStringMessage} = icuMessageOrNot;
-  if (typeof id !== 'string') {
+  const {i18nId, values, uiStringMessage} = icuMessageOrNot;
+  if (typeof i18nId !== 'string') {
     return false;
   }
 
@@ -408,9 +411,8 @@ function isIcuMessage(icuMessageOrNot) {
     return false;
   }
 
-  // Finally return true if string is found in the default locale.
-  // TODO(bckenny): faster to do element access? regex id first?
-  return id in LOCALES.en;
+  // Finally return true if i18nId seems correct.
+  return MESSAGE_I18N_ID_REGEX.test(i18nId);
 }
 
 /**
@@ -463,7 +465,7 @@ function replaceIcuMessageInstanceIds(inputObject, locale) {
         subObject[property] = formattedString;
         // Since the formattedString is now in the LHR, no need for uiStringMessage.
         icuMessagePaths[currentPathAsString] = {
-          id: possibleIcuMessage.id,
+          i18nId: possibleIcuMessage.i18nId,
           values: possibleIcuMessage.values,
         };
       } else {

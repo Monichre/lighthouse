@@ -63,9 +63,11 @@ describe('swap-locale', () => {
       },
       i18n: {
         icuMessagePaths: {
-          'audits.redirects.title': {id: 'lighthouse-core/audits/redirects.js | title'},
-          'audits.redirects.doesntExist': {id: 'lighthouse-core/audits/redirects.js | doesntExist'},
-          'audits.fakeaudit.title': {id: 'lighthouse-core/audits/fakeaudit.js | title'},
+          'audits.redirects.title': {i18nId: 'lighthouse-core/audits/redirects.js | title'},
+          'audits.redirects.doesntExist': {
+            i18nId: 'lighthouse-core/audits/redirects.js | doesntExist',
+          },
+          'audits.fakeaudit.title': {i18nId: 'lighthouse-core/audits/fakeaudit.js | title'},
         },
       },
     };

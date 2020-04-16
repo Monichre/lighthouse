@@ -22,10 +22,11 @@ declare global {
       // Otherwise recurse into any properties and make the same change.
       {[K in keyof T]: FormattedI18n<T[K]>};
 
-    // TODO(bckenny): should IcuMessage be just the string, and have an IcuMessageEntry/Instance or something for this object?
+    // TODO(bckenny): should 'IcuMessage' be just the string, and have an IcuMessageEntry/Instance or something for this object?
     export type IcuMessage = {
-      // TODO(bckenny): make a more distinctive i18nId or something?
-      id: string;
+      // NOTE: i18nId rather than just id to make tsc typing a little easier (compare vs type branding which won't survive JSON roundtrip).
+      /** The id locating this message in the locale json files. */
+      i18nId: string;
       values?: Record<string, string | number>;
       // TODO(bckenny): in practice is this ever a preformatted one? Or always a UIStrings backup? swap-locales has a formatted backup in the lhr itself. We really need a UIStrings backup for e.g. gatherer messages that don't exist anymore
       /** The original string given in 'UIStrings', optionally used as a backup if no locale message can be found. */

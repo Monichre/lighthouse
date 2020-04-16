@@ -32,13 +32,16 @@ describe('i18n', () => {
   });
 
   describe('#createMessageInstanceIdFn', () => {
-    it('returns a string reference', () => {
+    it('returns a IcuMessage reference', () => {
       const fakeFile = path.join(__dirname, 'fake-file.js');
       const templates = {daString: 'use me!'};
       const formatter = i18n.createMessageInstanceIdFn(fakeFile, templates);
 
-      const expected = 'lighthouse-core/test/lib/i18n/fake-file.js | daString # 0';
-      expect(formatter(templates.daString, {x: 1})).toBe(expected);
+      expect(formatter(templates.daString, {x: 1})).toStrictEqual({
+        i18nId: 'lighthouse-core/test/lib/i18n/fake-file.js | daString',
+        values: {x: 1},
+        uiStringMessage: 'use me!',
+      });
     });
   });
 
@@ -54,9 +57,10 @@ describe('i18n', () => {
       const icuMessagePaths = i18n.replaceIcuMessageInstanceIds(lhr, 'en-US');
       expect(lhr.audits['fake-audit'].title).toBe('different 1!');
 
-      const expectedPathId = 'lighthouse-core/test/lib/i18n/fake-file-number-2.js | aString';
+      const expectedI18nId = 'lighthouse-core/test/lib/i18n/fake-file-number-2.js | aString';
       expect(icuMessagePaths).toEqual({
-        [expectedPathId]: [{path: 'audits[fake-audit].title', values: {x: 1}}]});
+        'audits[fake-audit].title': {i18nId: expectedI18nId, values: {x: 1}}
+      });
     });
   });
 
@@ -293,7 +297,7 @@ describe('i18n', () => {
         .toThrow(`Provided value "sirNotAppearingInThisString" does not match any placeholder in ICU message "Hello {timeInMs, number, seconds} World"`);
     });
 
-    it('formats correctly with NaN and Infinity numeric values', () => {
+    it.only('formats correctly with NaN and Infinity numeric values', () => {
       const helloInfinityStr = str_(UIStrings.helloBytesWorld, {in: Infinity});
       expect(helloInfinityStr).toBeDisplayString('Hello ∞ World');
 
