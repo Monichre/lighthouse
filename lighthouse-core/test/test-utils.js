@@ -43,6 +43,11 @@ expect.extend({
   },
 });
 
+/**
+ * Some tests use the result of a LHR processed by our proto serialization.
+ * Proto is an annoying dependency to setup, so we allows tests that use it
+ * to be skipped when run locally. This makes external contributions simpler.
+ */
 function getProtoRoundTrip() {
   let sampleResultsRoundtripStr;
   let describeIfProtoExists;
